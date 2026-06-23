@@ -1,0 +1,46 @@
+# Supabase project config. Linked project ref is set via `supabase link`.
+project_id = "xbeuuibbllcvyovpmpak"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[auth]
+enabled = true
+# Where magic-link / OTP redirects land. Override per-env with PORTAL_BASE_URL.
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/auth/callback"]
+jwt_expiry = 3600
+# New buyers only — accounts are created by wh-purchase-47 via the admin API
+# (which bypasses this); public self-signup is off (Phase 2.5).
+enable_signup = false
+# Minimum length for email+password auth (Phase 2.5).
+minimum_password_length = 8
+# Email + password (primary) with magic-link / OTP kept as the forgot-password fallback.
+[auth.email]
+enable_signup = false
+double_confirm_changes = true
+enable_confirmations = true
+# Recovery/OTP token lifetime — the welcome-email /setup token must outlive a short
+# session, so give the buyer 24h (max). Beyond that, "forgot password" re-issues a link.
+otp_expiry = 86400
+
+[functions.wh-purchase-47]
+# Inbound GHL webhook — verifies a shared secret header itself, so no Supabase JWT required.
+verify_jwt = false
+
+[functions.wh-purchase-497]
+# Inbound GHL $497 webhook — shared-secret header, no Supabase JWT (Phase 4).
+verify_jwt = false
+
+[functions.sync-segment-tag]
+# Called by the user_segments pg_net trigger — shared-secret header, no Supabase JWT (Phase 4).
+verify_jwt = false
