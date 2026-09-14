@@ -34,6 +34,8 @@ courses(id, slug, title, status, thumbnail_url NULLABLE)
   -- thumbnail_url (Phase 7) = course card art (Storage; rendered object-fit cover). NULL = placeholder.
 modules(id, course_id, sort, title)
 lessons(id, module_id, sort, title, vimeo_id NULLABLE, video_source, description, resources JSONB, thumbnail_url NULLABLE)
+  -- description (post-launch, Sep 2026): stores sanitized HTML from the admin RichTextEditor
+  --   (p/br/strong/em/u/a/ul/ol/li). Legacy plain-text rows still render (newlines → <br>).
   -- video_source (Phase 2.7-fix, 0009) ∈ vimeo|youtube|url ; vimeo_id REUSED as the generic
   --   video ref: Vimeo ID, YouTube ID, or direct URL per video_source. NULL/'' = no-video lesson.
   -- thumbnail_url (Phase 7) = lesson card art (Storage; rendered object-fit cover). NULL = placeholder.

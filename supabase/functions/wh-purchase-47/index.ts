@@ -57,9 +57,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return json({ error: "missing_required_fields", need: ["email", "contact_id", "payment.transaction_id"] }, 400);
   }
 
-  // 3. Confirm this is the $47 product (total_amount === 47 + line-item title).
+  // 3. Confirm this is the $47 product (payment succeeded + line-item title). Any paid
+  //    amount is accepted so coupon/discounted purchases still get access.
   const isFortySeven =
-    totalAmount === 47 &&
     payment?.payment_status === "succeeded" &&
     (lineTitle === EXPECTED_47_PRODUCT_TITLE || (lineTitle ?? "").includes("$47"));
   if (!isFortySeven) {

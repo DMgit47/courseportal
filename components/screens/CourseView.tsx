@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { allLessons, findLesson, moduleOf, nextLessonId } from "@/lib/course";
+import RichText from "@/components/ui/RichText";
 import { adShouldFire, resolveAdRule, resolveCompletionUpsell, resolveRailUpsell } from "@/lib/portal-map";
 import { track } from "@/lib/track";
 import LessonThumbCard from "@/components/ui/LessonThumbCard";
@@ -292,7 +293,13 @@ export default function CourseView({
 
               {!courseComplete && (
                 <div className="flex items-start justify-between gap-4">
-                  <p className="text-sm text-textSecondary leading-[22px] max-w-[560px]">{lesson.description || DEFAULT_LESSON_DESC}</p>
+                  <div className="max-w-[560px]">
+                    {lesson.description ? (
+                      <RichText value={lesson.description} />
+                    ) : (
+                      <p className="text-sm text-textSecondary leading-[22px]">{DEFAULT_LESSON_DESC}</p>
+                    )}
+                  </div>
                   {nextId && (
                     <button onClick={() => setCurrentLessonId(nextId)} className="shrink-0 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primaryHover">
                       Next lesson <IconArrowRight size={15} />
