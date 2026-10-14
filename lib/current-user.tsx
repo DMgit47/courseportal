@@ -10,6 +10,7 @@ const fallback: CurrentUser = {
   name: FIXTURES.user.name,
   email: FIXTURES.user.email,
   initials: FIXTURES.user.initials,
+  canUnsubscribe: false,
 };
 
 const CurrentUserContext = createContext<CurrentUser>(fallback);
