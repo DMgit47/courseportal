@@ -117,8 +117,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
     );
     if (up1.error) throw up1.error;
 
+    // Trial tier: a sub-$1 charge (the $0 offer's card-validation amount) is
+    // tagged 'ghl_trial' so the portal can show "Unsubscribe" to those buyers
+    // only. Full-price buyers keep 'ghl_purchase_47'.
+    const amt = Number(totalAmount);
+    const isTrial = Number.isFinite(amt) && amt < 1;
     const enr = await db.from("enrollments").upsert(
-      { user_id: userId, course_id: course.id, source: "ghl_purchase_47" },
+      { user_id: userId, course_id: course.id, source: isTrial ? "ghl_trial" : "ghl_purchase_47" },
       { onConflict: "user_id,course_id", ignoreDuplicates: true },
     );
     if (enr.error) throw enr.error;
