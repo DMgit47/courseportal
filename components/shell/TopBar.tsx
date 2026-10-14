@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useCurrentUser } from "@/lib/current-user";
-import { IconBell, IconChevronLeft, IconLogOut, IconMenu, IconSearch } from "@/components/icons";
+import { UNSUBSCRIBE_URL } from "@/lib/brand";
+import { IconBell, IconChevronLeft, IconCreditCard, IconLogOut, IconMenu, IconSearch } from "@/components/icons";
 
 export default function TopBar({
   title,
@@ -58,6 +59,13 @@ export default function TopBar({
                 <div className="text-xs text-textSecondary">{user.email}</div>
               </div>
               <div className="h-px bg-line my-1"></div>
+              {user.canUnsubscribe && (
+                // Trial-tier buyers only: opens the Stripe customer portal to cancel.
+                <a href={UNSUBSCRIBE_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-sm font-medium text-textSecondary hover:bg-subtle hover:text-textPrimary">
+                  <IconCreditCard size={16} /> Unsubscribe
+                </a>
+              )}
               <button onClick={() => { setMenuOpen(false); onLogout(); }}
                 className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-sm font-medium text-textSecondary hover:bg-subtle hover:text-textPrimary">
                 <IconLogOut size={16} /> Log out
