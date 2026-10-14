@@ -1,3 +1,4 @@
+import { TRIAL_ENROLLMENT_SOURCE } from "@/lib/brand";
 import { createClient } from "@/lib/supabase/server";
 import type { EnrolledCourseRow } from "@/lib/supabase/database.types";
 import type { AdRuleRow, UpsellRow } from "@/lib/admin/types";
@@ -24,6 +25,10 @@ export interface CurrentUser {
   name: string;
   email: string;
   initials: string;
+  // True only for trial-tier buyers (enrollments.source = 'ghl_trial', set by
+  // wh-purchase-47 when the paid amount is under $1). Drives the Unsubscribe
+  // item in the account menu; full-price buyers never see it.
+  canUnsubscribe: boolean;
 }
 
 export interface EnrolledCourse {
@@ -51,7 +56,14 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
   const name = (user.user_metadata?.full_name as string) || user.email || "Learner";
-  return { name, email: user.email ?? "", initials: initialsFrom(name) || "?" };
+  // Own enrollments only (RLS: enrollments_select_own). Any trial-tier row
+  // unlocks the Unsubscribe menu item.
+  const { data: enrollments } = await supabase
+    .from("enrollments")
+    .select("source")
+    .eq("user_id", user.id);
+  const canUnsubscribe = (enrollments ?? []).some((e) => e.source === TRIAL_ENROLLMENT_SOURCE);
+  return { name, email: user.email ?? "", initials: initialsFrom(name) || "?", canUnsubscribe };
 }
 
 // CONNECTION-MAP §1: get_enrolled_courses(user). Returns [] when not enrolled.
